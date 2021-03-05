@@ -16,7 +16,7 @@ public class Book {
     private String author;
     private String cover;
     private String description;
-    private String categoryId;
-    private String evaluationScore;
-    private String evaluationQuantity;
+    private Long categoryId;
+    private Float evaluationScore;
+    private Integer evaluationQuantity;
 }

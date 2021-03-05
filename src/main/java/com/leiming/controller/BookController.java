@@ -63,6 +63,8 @@ public class BookController {
         return bookService.paging(categoryId, order, pageNum, rows == null?10:rows);
     }
 
+
+
     @GetMapping("book/{id}")
     public ModelAndView showDetail(@PathVariable("id") Long id, HttpSession session){
         Member member =  (Member)session.getAttribute("loginMember");

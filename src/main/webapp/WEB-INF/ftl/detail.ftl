@@ -44,71 +44,7 @@
         }
 
     </style>
-    <script>
-        $(function () {
-            $.fn.raty.defaults.path = '/resources/raty/lib/images';
-            $(".stars").raty({readOnly: true});
 
-
-        })
-        $(function (){
-            <#if memberReadState ??>
-            $("*[data-read-state='${memberReadState.readState}']").addClass("highlight");
-            </#if>
-            <#if !loginMember ??>
-                $("*[data-read-state], #btnEvaluation, *[data-evaluation-id]").click(function (){
-                    $("#exampleModalCenter").modal("show");
-                })
-            </#if>
-
-            <#if loginMember ??>
-            $("*[data-read-state]").click(function (){
-                var readState =  $(this).data("read-state");
-                $.post("/update_member_reader_state",{
-                    memberId: ${loginMember.memberId},
-                    bookId: ${book.bookId},
-                    readState: readState
-                },function (data){
-                    console.log(data);
-                    if (data.code === "0"){
-                        $("*[data-read-state]").removeClass("highlight");
-                        $("*[data-read-state='"+readState+"']").addClass("highlight");
-                    }
-
-                }, "json")
-            })
-            </#if>
-            $("#btnEvaluation").click(function (){
-                $("#score").raty({});
-                <#if loginMember ??>
-                    $("#dlgEvaluation").modal("show");
-                </#if>
-            })
-            //评论对话框提交数据
-            $("#btnSubmit").click(function(){
-                var score = $("#score").raty("score");//获取评分
-                var content = $("#content").val();
-                if(score == 0 || $.trim(content) == ""){
-                    return;
-                }
-                <#if loginMember ??>
-                $.post("/evaluation" , {
-                    score : score,
-                    bookId : ${book.bookId},
-
-                    memberId : ${loginMember.memberId},
-                    content : content
-                },function(json){
-                    if(json.code === "0"){
-                        window.location.reload();//刷新当前页面
-                    }
-                },"json")
-                </#if>
-
-            })
-
-        })
-    </script>
 </head>
 <body>
 <!--<div style="width: 375px;margin-left: auto;margin-right: auto;">-->
@@ -142,7 +78,7 @@
                 </p>
                 <div class="row pl-1 pr-2">
                     <div class="col-6 p-1">
-                        <button type="button" data-read-state="1" class="btn btn-light btn-sm w-100">
+                        <button type="button" id="1" data-read-state="1" class="btn btn-light btn-sm w-100">
                             <img style="width: 1rem;" class="mr-1"
                                  src="https://img3.doubanio.com/f/talion/cf2ab22e9cbc28a2c43de53e39fce7fbc93131d1/pics/card/ic_mark_todo_s.png"/>想看
                         </button>
@@ -240,5 +176,88 @@
     </div>
 </div>
 
+
 </body>
+<script>
+    $(function (){
+        $.fn.raty.defaults.path = '/resources/raty/lib/images';
+        $(".stars").raty({readOnly: true});
+        <#if memberReadState ??>
+        $("*[data-read-state='${memberReadState.readState}']").addClass("highlight");
+        </#if>
+        <#if !loginMember ??>
+        $("*[data-read-state], #btnEvaluation, *[data-evaluation-id]").click(function (){
+            $("#exampleModalCenter").modal("show");
+        })
+        </#if>
+
+        <#if loginMember ??>
+        $("*[data-read-state]").click(function (){
+            var readState =  $(this).data("read-state");
+            $.post("/update_member_reader_state",{
+                memberId: ${loginMember.memberId},
+                bookId: ${book.bookId},
+                readState: readState
+            },function (data){
+                console.log(data);
+                if (data.code === "0"){
+                    $("*[data-read-state]").removeClass("highlight");
+                    $("*[data-read-state='"+readState+"']").addClass("highlight");
+                }
+
+            }, "json")
+        })
+        </#if>
+        $("#btnEvaluation").click(function (){
+            $("#score").raty({});
+            <#if loginMember ??>
+            $("#dlgEvaluation").modal("show");
+            </#if>
+        })
+        //评论对话框提交数据
+        $("#btnSubmit").click(function(){
+            var score = $("#score").raty("score");//获取评分
+            var content = $("#content").val();
+            if(score == 0 || $.trim(content) == ""){
+                return;
+            }
+            <#if loginMember ??>
+            $.post("/evaluation" , {
+                score : score,
+                bookId : ${book.bookId},
+
+                memberId : ${loginMember.memberId},
+                content : content
+            },function(json){
+                if(json.code === "0"){
+                    window.location.reload();//刷新当前页面
+                }
+            },"json")
+            //评论点赞
+
+            </#if>
+
+        })
+        <#if loginMember ??>
+        $("[data-evaluation-id]").click(function(){
+
+            let evaluationId = $(this).data("evaluation-id");
+            console.log(evaluationId);
+            var id;
+            if (isNaN(evaluationId)){
+                 id = parseInt(evaluationId.replace(",",""));
+            }else {
+                 id = evaluationId;
+            }
+            $.post("/enjoy", {id: id}, function (json) {
+                console.log(json);
+                if (json.code === 0) {
+                    $("*[data-evaluation-id='" + evaluationId + "'] span").text(json.data.enjoy);
+                }
+            }, "json")
+        })
+        </#if>
+
+    })
+</script>
 </html>

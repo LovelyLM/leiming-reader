@@ -6,6 +6,9 @@ import com.leiming.entity.Member;
 import com.leiming.service.EvaluationService;
 import com.leiming.service.MemberService;
 import com.leiming.service.MyException;
+import com.leiming.utils.LMResponse;
+import com.leiming.utils.LMResultBuilder;
+import com.leiming.utils.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -107,6 +110,12 @@ public class MemberController {
         }
         return map;
     }
+
+    /**
+     * 短评
+     * @param evaluation
+     * @return
+     */
     @PostMapping("evaluation")
     @ResponseBody
     public Map evaluation(Evaluation evaluation){
@@ -122,5 +131,13 @@ public class MemberController {
             map.put("msg", e.getMsg());
         }
         return map;
+    }
+
+    @PostMapping("enjoy")
+    @ResponseBody
+    public LMResponse enjoy(Long id){
+        Evaluation evaluation = evaluationService.enjoy(id);
+        return LMResultBuilder.success(evaluation, ResultCode.SUCCESS);
+
     }
 }
